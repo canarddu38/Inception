@@ -1,0 +1,113 @@
+services:
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    restart: always
+    env_file: .env
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - inception
+
+  redis:
+    build: ./requirements/redis
+    container_name: redis
+    restart: always
+    networks:
+      - inception
+
+  adminer:
+    build: ./requirements/adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - "8000:8000"
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    restart: always
+    env_file: .env
+    depends_on:
+      - mariadb
+      - redis
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+
+  ftp:
+    build: ./requirements/ftp
+    container_name: ftp
+    restart: always
+    env_file: .env
+    depends_on:
+      - wordpress
+    ports:
+      - "21:21"
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    
+  mywebsite:
+    build: ./requirements/mywebsite
+    container_name: mywebsite
+    restart: always
+    env_file: .env
+    ports:
+      - "8080:8080"
+    networks:
+      - inception
+
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "443:443"
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+  
+  rsync:
+    build: ./requirements/rsync
+    container_name: rsync
+    restart: always
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+      - rsync_backups:/var/backups
+    networks:
+      - inception
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/julcleme/data/mariadb
+      o: bind
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/julcleme/data/wordpress
+      o: bind
+  rsync_backups:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/julcleme/data/backups
+      o: bind
+
+networks:
+  inception:
