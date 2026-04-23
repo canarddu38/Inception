@@ -51,9 +51,9 @@ fi
 
 echo "Finished config"
 
-sed -i 's|listen = /run/php/php7.4-fpm.sock|listen = 0.0.0.0:9000|g' /etc/php/7.4/fpm/pool.d/www.conf
-sed -i 's|^listen.allowed_clients =.*|;listen.allowed_clients =|g' /etc/php/7.4/fpm/pool.d/www.conf
-sed -i 's|^listen = .*|listen = 0.0.0.0:9000|g' /etc/php/7.4/fpm/pool.d/www.conf
-sed -i 's|^daemonize = yes|daemonize = no|g' /etc/php/7.4/fpm/php-fpm.conf
+sed -i 's|listen = /run/php/php8.2-fpm.sock|listen = 0.0.0.0:9000|g' /etc/php/8.2/fpm/pool.d/www.conf
+sed -i 's|^listen.allowed_clients =.*|;listen.allowed_clients =|g' /etc/php/8.2/fpm/pool.d/www.conf
+sed -i 's|^listen = .*|listen = 0.0.0.0:9000|g' /etc/php/8.2/fpm/pool.d/www.conf
+sed -i 's|^daemonize = yes|daemonize = no|g' /etc/php/8.2/fpm/php-fpm.conf
 
-exec /usr/sbin/php-fpm7.4 -F
+exec /usr/sbin/php-fpm8.2 -F

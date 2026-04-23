@@ -1,7 +1,7 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-    adminer php7.4 \
+    adminer php8.2-cli \
     && rm -rf /var/lib/apt/lists/*
 
 COPY init.sh /usr/local/bin/

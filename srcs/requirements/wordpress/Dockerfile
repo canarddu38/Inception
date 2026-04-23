@@ -1,10 +1,10 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-    php7.4 \
-    php7.4-fpm \
-    php7.4-mysql \
-    php7.4-redis \
+    php8.2-cli \
+    php8.2-fpm \
+    php8.2-mysql \
+    php8.2-redis \
     mariadb-client \
     curl \
     tar \
