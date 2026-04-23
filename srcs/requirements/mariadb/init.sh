@@ -10,14 +10,7 @@ fi
 
 sed -i 's/^bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
 
-mysqld_safe --datadir=/var/lib/mysql &
-
-# Wait for server
-until mysqladmin ping --silent; do
-    sleep 1
-done
-
-mysql -u root <<EOF
+cat > /tmp/mariadb-init.sql <<EOF
 CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
 CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
 ALTER USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
@@ -26,4 +19,4 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 FLUSH PRIVILEGES;
 EOF
 
-wait
+exec mysqld_safe --datadir=/var/lib/mysql --init-file=/tmp/mariadb-init.sql
