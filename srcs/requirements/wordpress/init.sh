@@ -5,6 +5,15 @@ mkdir -p /var/www/html
 chown -R www-data:www-data /var/www/html
 cd /var/www/html
 
+sed -i 's|listen = /run/php/php8.2-fpm.sock|listen = 0.0.0.0:9000|g' /etc/php/8.2/fpm/pool.d/www.conf
+sed -i 's|^listen.allowed_clients =.*|;listen.allowed_clients =|g' /etc/php/8.2/fpm/pool.d/www.conf
+sed -i 's|^listen = .*|listen = 0.0.0.0:9000|g' /etc/php/8.2/fpm/pool.d/www.conf
+sed -i 's|^daemonize = yes|daemonize = no|g' /etc/php/8.2/fpm/php-fpm.conf
+
+php-fpm8.2 -F &
+php_fpm_pid=$!
+trap 'kill "$php_fpm_pid" 2>/dev/null || true' EXIT
+
 echo "Done folders!"
 
 until mysql -h mariadb -u$MYSQL_USER -p$MYSQL_PASSWORD -e "SELECT 1" > /dev/null 2>&1; do
@@ -50,10 +59,4 @@ if [ ! -f wp-config.php ]; then
 fi
 
 echo "Finished config"
-
-sed -i 's|listen = /run/php/php8.2-fpm.sock|listen = 0.0.0.0:9000|g' /etc/php/8.2/fpm/pool.d/www.conf
-sed -i 's|^listen.allowed_clients =.*|;listen.allowed_clients =|g' /etc/php/8.2/fpm/pool.d/www.conf
-sed -i 's|^listen = .*|listen = 0.0.0.0:9000|g' /etc/php/8.2/fpm/pool.d/www.conf
-sed -i 's|^daemonize = yes|daemonize = no|g' /etc/php/8.2/fpm/php-fpm.conf
-
-exec /usr/sbin/php-fpm8.2 -F
+wait "$php_fpm_pid"
