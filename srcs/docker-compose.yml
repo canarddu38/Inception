@@ -91,23 +91,8 @@ services:
 
 volumes:
   mariadb_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/julcleme/data/mariadb
-      o: bind
   wordpress_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/julcleme/data/wordpress
-      o: bind
   rsync_backups:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/julcleme/data/backups
-      o: bind
 
 networks:
   inception:
